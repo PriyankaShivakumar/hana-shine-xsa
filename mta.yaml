@@ -70,7 +70,7 @@ modules:
           url: "${default-url}"
     requires:
       - name: shine-uaa
-      - name: shine-scheduler
+      # - name: shine-scheduler
       - name: shine-core-db
       - name: shine-container
       # - name: shine-auditlog
@@ -124,4 +124,4 @@ resources:
      
   - name: sapui5-provider
     properties:
-      url: "https://sapui5.hana.ondemand.com/1.46.12"
+      url: "https://sapui5.hana.ondemand.com/1.71.61"

@@ -1,7 +1,7 @@
 /* for impelementing level hierarchy*/
-$.import("sap.hana.democontent.epm.services", "messages");
+await $.import("sap.hana.democontent.epm.services", "messages");
 var MESSAGES = $.sap.hana.democontent.epm.services.messages;
-$.import("sap.hana.democontent.epm.services", "session");
+await $.import("sap.hana.democontent.epm.services", "session");
 var SESSIONINFO = $.sap.hana.democontent.epm.services.session;
 
     var list = [];
@@ -15,10 +15,10 @@ var SESSIONINFO = $.sap.hana.democontent.epm.services.session;
      
  }
     
-function getHierarchyData()
+async function getHierarchyData()
 {
-    var conn = $.hdb.getConnection();
-    var region = $.request.parameters.get('region');
+    var conn = await $.hdb.getConnection();
+    var region = encodeURI($.request.parameters.get('region'));
     region = region.replace("'", ""); 
     var rs;
 try
@@ -28,40 +28,41 @@ try
            ' FROM "sap.hana.democontent.epm.models/SALES_DYNAMIC_PARENT/REGION_COUNTRY_LEVEL/hier/REGION_COUNTRY_LEVEL"' +' WHERE PRED_NODE = ?)'+
             'GROUP BY "COUNTRY"';                
 
- rs = conn.executeQuery(query, '[REGION].[' + region + ']');
+ rs = await conn.executeQuery(query, '[REGION].[' + region + ']');
   var i;
  
          for (i = 0; i < rs.length; i++) {
             list.push(createTotalEntry(rs[i]));
         }
 
-        conn.close();
+        await conn.close();
 } 
     
     catch (e)
     {
         $.response.status = $.net.http.INTERNAL_SERVER_ERROR;
-        $.response.setBody(e.message);
+        await $.response.setBody(e.message);
         return;
     }
 
     body = JSON.stringify({SalesByCountry:list});
     $.trace.debug(body);
     $.response.contentType = 'application/json';
-    $.response.setBody(body);
+    await $.response.setBody(body);
     $.response.status = $.net.http.OK;
 }
 
-var aCmd = $.request.parameters.get('cmd');
+var aCmd = encodeURI($.request.parameters.get('cmd'));
 switch (aCmd) {
     case "getHierarchyData":
-        getHierarchyData();
+        await getHierarchyData();
         break;
   
     default:
         $.response.status = $.net.http.INTERNAL_SERVER_ERROR;
-        $.response.setBody(MESSAGES.getMessage('SEPM_ADMIN', '002', aCmd));
+        await $.response.setBody(MESSAGES.getMessage('SEPM_ADMIN', '002', aCmd));
 }        
+export default {MESSAGES,SESSIONINFO,list,body,createTotalEntry,getHierarchyData,aCmd};
 
     
     

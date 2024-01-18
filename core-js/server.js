@@ -1,18 +1,54 @@
+/*eslint no-console: 0*/
+/*eslint-env node, es6 */
 "use strict";
 
-const port = process.env.PORT || 3000;
-const server = require("http").createServer();
+var async_xsjs = require("@sap/async-xsjs");
+var xsenv = require("@sap/xsenv");
+var port = process.env.PORT || 3000;
 global.__base = __dirname + "/";
-const init = require(global.__base + "utils/initialize");
 
-//Initialize Express App for XSA UAA and HDBEXT Middleware
-const app = init.initExpress();
+var options = {
+    redirectUrl: "/index.xsjs"
+};
 
-//Initialize the XSJS Compatibility Layer
-init.initXSJS(app);
+//configure HANA
+try {
+	options = Object.assign(options, xsenv.getServices({
+		hana: {
+			tag: "hana"
+		}
+	}));
+} catch (err) {
+	console.error(err);
+}
 
-//Start the Server 
-server.on("request", app);
-server.listen(port, () => {
-	console.info("HTTP Server: " + server.address().port);
+// configure UAA
+try {
+	options = Object.assign(options, xsenv.getServices({
+		uaa: {
+			tag: "xsuaa"
+		}
+	}));
+} catch (err) {
+	console.error(err);
+}
+
+
+// configure AuditLog
+// try {
+//     options = Object.assign(options, xsenv.getServices({ auditLog: { tag: "auditlog" } }));
+// } catch (err) {
+//     console.log("[WARN]", err.message);
+// }
+
+
+// start server
+async_xsjs(options).then((async_xsjs_server)=>{
+    async_xsjs_server.listen(port, (err)=>{
+      if(!err) {
+        console.log('Server listening on port %d', port);
+      }else{
+        console.log('Server failed to start on port %d', port);
+      }
+    });
 });

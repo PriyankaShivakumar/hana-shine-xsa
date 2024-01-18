@@ -1,27 +1,26 @@
-function po_create_before_exit(param) {
+async function po_create_before_exit(param) {
     $.trace.error("Start of Exit");
     var after = param.afterTableName;
     var pStmt = null;
     var poid = '';
    
     try {
-        pStmt = param.connection
-        		 
-                   .prepareStatement('SELECT max(PURCHASEORDERID + 1) from "PO.Header"');
-        var rs = pStmt.executeQuery();
-        while (rs.next()) {
+        pStmt = await param.connection.prepareStatement('SELECT "purchaseOrderSeqId".NEXTVAL from "DUMMY"');
+        var rs = await pStmt.executeQuery();
+        while (await rs.next()) {
            	poid = rs.getString(1);
         }
         $.trace.error(poid);
-        pStmt.close();
+        await pStmt.close();
 
-        pStmt = param.connection.prepareStatement("update\"" + after + "\"set PURCHASEORDERID = ?");
+        pStmt = await param.connection.prepareStatement("update\"" + after + "\"set PURCHASEORDERID = ?");
         pStmt.setString(1, poid.toString());
-        pStmt.execute();
-        pStmt.close();
+        await pStmt.execute();
+        await pStmt.close();
     } catch (e) {
     	$.trace.error(e.message);
-        pStmt.close();
+        await pStmt.close();
     }
 
 }
+export default {po_create_before_exit};

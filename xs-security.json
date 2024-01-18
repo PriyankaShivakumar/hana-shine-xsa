@@ -1,5 +1,5 @@
 {
-  "xsappname": "${org}-${space}-shinecf",
+  "xsappname": "hana-shinecf",
   "tenant-mode":"dedicated",
   "scopes": [
   	{
