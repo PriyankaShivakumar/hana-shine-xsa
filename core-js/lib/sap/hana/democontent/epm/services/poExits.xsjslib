@@ -5,7 +5,8 @@ async function po_create_before_exit(param) {
     var poid = '';
    
     try {
-        pStmt = await param.connection.prepareStatement('SELECT "purchaseOrderSeqId".NEXTVAL from "DUMMY"');
+        pStmt = await param.connection.prepareStatement('select "purchaseOrderSeqId".NEXTVAL from "DUMMY"');
+                   //.prepareStatement('SELECT max(PURCHASEORDERID + 1) from "PO.Header"');
         var rs = await pStmt.executeQuery();
         while (await rs.next()) {
            	poid = rs.getString(1);

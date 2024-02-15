@@ -60,7 +60,7 @@ switch (aCmd) {
   
     default:
         $.response.status = $.net.http.INTERNAL_SERVER_ERROR;
-        await $.response.setBody(MESSAGES.getMessage('SEPM_ADMIN', '002', aCmd));
+        await $.response.setBody(await MESSAGES.getMessage('SEPM_ADMIN', '002', aCmd));
 }        
 export default {MESSAGES,SESSIONINFO,list,body,createTotalEntry,getHierarchyData,aCmd};
 
